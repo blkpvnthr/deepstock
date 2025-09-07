@@ -106,11 +106,9 @@ This will:
 ---
 
 ## 🖼 Example Plots
-Actual + Predictions + Forecasts
-
-Residuals & Loss Curves
-
-Volatility Indicators
+> Actual + Predictions + Forecasts
+> Residuals & Loss Curves
+> Volatility Indicators
 
 ### 📊 Example Metrics
 ``` bash
