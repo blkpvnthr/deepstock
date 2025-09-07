@@ -60,7 +60,7 @@ Clone the repo:
 ```bash
 git clone https://github.com/blkpvnthr/deepstock.git
 cd deepstock
-
+```
 Create a virtual environment:
 macOS/Linux
 ``` bash
@@ -79,7 +79,7 @@ pip install -r requirements.txt
 
 ---
 
-📈 Usage
+## 📈 Usage
 
 1. Prepare your data
 
@@ -125,7 +125,7 @@ Bias Correction: +1.235
 
 ---
 
-🛠 Requirements
+## 🛠 Requirements
 
 > Python 3.10+
 > pandas
@@ -141,7 +141,7 @@ pip install -r requirements.txt
 
 ---
 
-🔮 Roadmap
+## 🔮 Roadmap
 
  Add hyperparameter tuning
 
@@ -151,13 +151,13 @@ pip install -r requirements.txt
 
 ### Deploy forecasts as a simple API
 ---
-📜 License
+## 📜 License
 
 MIT License.
 Feel free to fork and adapt for your own trading experiments 🚀
 
 ---
 
-✨ Acknowledgements
+## ✨ Acknowledgements
 
 Inspired by real-world quantitative finance research and experimentation with deep learning on market data.
