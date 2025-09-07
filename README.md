@@ -131,12 +131,10 @@ pip install -r requirements.txt
 
 ## 🔮 Roadmap
 
- Add hyperparameter tuning
+> Add hyperparameter tuning
+> Integrate additional technical indicators
+> Support transformer-based time-series models
 
- Integrate additional technical indicators
-
- Support transformer-based time-series models
- 
 ---
 ## 📜 License
 
