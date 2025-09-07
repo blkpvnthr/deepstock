@@ -28,20 +28,29 @@ It supports training, evaluation, and visualization of model performance with **
 
 ## 📂 Project Structure
 
-quant-forecast/
+```
+deepstock/
 │
-├── data/ # input stock data (CSV or yfinance)
-├── checkpoints/ # saved models (.keras)
-├── results/ # predictions, plots, forecasts
-│ ├── predictions.csv
-│ ├── future_predictions60d.csv
-│ ├── future_predictions*_6m.csv
-│ └── plots/
+├── data/                  # input stock data (CSV or yfinance)
 │
-├── prediction.py # main training + forecasting loop
-├── utils.py # helper functions (plotting, feature engineering)
-├── requirements.txt # dependencies
-└── README.md # project docs
+├── checkpoints/           # saved models (.keras)
+│
+├── results/               # predictions, plots, forecasts
+│   ├── predictions.csv
+│   ├── future_predictions_60d.csv
+│   ├── future_predictions_*_6m.csv
+│   └── plots/
+│
+├── images/                # example plots & animations
+│   ├── example1.png
+│   └── example2.gif
+│
+├── prediction.py          # main training + forecasting loop
+├── utils.py               # helper functions (plotting, feature engineering)
+├── requirements.txt       # dependencies
+└── README.md              # project docs
+```
+
 
 ---
 

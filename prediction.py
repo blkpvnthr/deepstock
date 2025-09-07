@@ -1,32 +1,21 @@
-from scipy.signal import savgol_filter  # better smoothing
+from scipy.signal import savgol_filter
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-
-# For reading stock data from Yahoo Finance
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, mean_absolute_percentage_error
 import yfinance as yf
 import tensorflow as tf
 import numpy as np
-
-# Enable eager execution to avoid numpy() errors
-#tf.config.run_functions_eagerly(True)
-tf.data.experimental.enable_debug_mode()
-
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import timedelta
-# For timestamps
-from numpy.typing import NDArray # type: ignore
 import seaborn as sns
-from keras.optimizers import Adam # type: ignore
-from datetime import datetime, timedelta
-import keras_tuner as kt # type: ignore
+from numpy.typing import NDArray
+from keras.optimizers import Adam
+import keras_tuner as kt
 from keras.models import Sequential, load_model
-from keras.layers import Input, LSTM, Dense, Dropout, BatchNormalization
+from keras.layers import Input, LSTM, Dense, Dropout, BatchNormalization, GRU
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
-from keras.layers import GRU
 from keras.regularizers import l2
 from tensorflow.keras import mixed_precision
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, mean_absolute_percentage_error
+from datetime import datetime, timedelta
 
 mixed_precision.set_global_policy("mixed_float16")
 Dense(32, activation="relu", kernel_regularizer=l2(1e-4))
@@ -38,7 +27,6 @@ pd.set_option('display.max_columns', None)
 #import tensorflow as tf
 #tf.config.set_visible_devices([], 'GPU')
 
-# IMB Quantum api_key="7d88492b4694e966a3e759ca99d8b648ff7f7353a1af35f78d69f8498030e083f61a496531000ff1eb91b34df5abc16075833e1413af843ae40a66adfbb8c9e7"
 
 # Set plotting styles
 sns.set_style('whitegrid')
@@ -220,15 +208,6 @@ def add_volatility_indicators(df, close_col="Close", high_col="High", low_col="L
 
     return df
 
-def safe_mape(y_true, y_pred, eps=1e-6):
-    """
-    Mean Absolute Percentage Error (MAPE) with epsilon 
-    to prevent division by zero when y_true ≈ 0.
-    """
-    y_true, y_pred = np.array(y_true), np.array(y_pred)
-    denom = np.maximum(np.abs(y_true), eps)
-    return np.mean(np.abs((y_true - y_pred) / denom))
-
 
 # --- Sequence preparation ---
 def make_sequences(df, features, time_steps=60, test_size=0.2):
@@ -337,280 +316,6 @@ print("Feature DataFrame shape:", feature_df.shape)
 print("x_train:", None if x_train is None else x_train.shape)
 print("x_test:", None if x_test is None else x_test.shape)
 
-"""
-
-# Plot historical view of the closing prices for SFAKE1 and TFAKE1
-plt.figure(figsize=(15, 10))
-plt.title('Historical Closing Prices')
-
-for company in ['SFAKE1', 'TFAKE1']:
-    if company in multiIndex_df.columns:  # Check if the company is in the columns
-        plt.plot(multiIndex_df.index,  multiIndex_df[company]['Close'], label=company, color=colors[company])
-    else:
-        print(f"Company {company} not found in MultiIndex DataFrame columns.")
-
-# Define and customize the legend
-plt.legend(title='Tech Stocks', loc='best', fontsize='large', title_fontsize='13', shadow=True, fancybox=True)
-plt.xlabel('Date')
-plt.ylabel('Adjusted Close Price')
-plt.grid(True)
-plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.show()
-
-# Plot historical view of the closing prices for FAKE2 and FAKE3
-plt.figure(figsize=(15, 10))
-plt.title('Historical Closing Prices')
-
-for company in [ 'FAKE2', 'FAKE3' ]:
-    if company in tech_list:  # Check if the company is in the columns
-        plt.plot(df.index, df[company]['Close'], label=company, color=colors[company])
-    else:
-        print(f"Company {company} not found in MultiIndex DataFrame columns.")
-
-# Define and customize the legend
-plt.legend(title='Tech Stocks', loc='best', fontsize='large', title_fontsize='13', shadow=True, fancybox=True)
-plt.xlabel('Date')
-plt.ylabel('Adjusted Close Price')
-plt.grid(True)
-plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.show()
-
-# Create a figure with subplots for each company's volume
-plt.figure(figsize=(15, 10))
-plt.suptitle('Total Volume of Stock Being Traded Each Day', fontsize=16)
-
-for i, (company_name, company_df) in enumerate(company_dict.items(), 1):
-    plt.subplot(2, 2, i)
-    plt.plot(company_df.index, company_df['Volume'], label=f'{company_name} Volume', color=colors[company_name])
-    plt.ylabel('Volume')
-    plt.xlabel('Date')
-    plt.title(f'{company_name}')
-    plt.grid(True)
-    plt.legend()
-
-# Adjust layout to avoid overlap
-plt.tight_layout(rect=[0, 0, 1, 0.96])  # Make space for the main title
-plt.show()
-
-
-
-# Create a figure with subplots for each company's daily returns
-# Create subplots for Daily Returns
-fig, axes = plt.subplots(nrows=2, ncols=2)
-fig.set_figheight(10)
-fig.set_figwidth(15)
-fig.suptitle('Daily Returns')
-
-# Plot daily returns with custom colors
-for ax, (company, company_df) in zip(axes.flatten(), company_dict.items()):
-    # Check if 'Daily Return' exists in the DataFrame
-    if 'Daily Return' in company_df.columns:
-        ax.plot(company_df.index, company_df['Daily Return'], label=f'{company} Daily Return', color=colors[company])
-        ax.set_title(f'{company}')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Daily Return')
-        ax.grid(True)
-        ax.legend()
-    else:
-        print(f"Error: 'Daily Return' column not found for {company}.")
-
-# Adjust layout
-fig.tight_layout(rect=[0, 0, 1, 0.96])
-plt.show()
-
-# Create subplots for Moving Averages
-fig, axes = plt.subplots(nrows=2, ncols=2)
-fig.set_figheight(10)
-fig.set_figwidth(15)
-fig.suptitle('Moving Averages')
-
-# Plot moving averages with custom colors
-for ax, (company_name, company_df) in zip(axes.flatten(), company_dict.items()):
-    for ma in ma_day:
-        column_name = f"MA for {ma} days"
-        # Check if the moving average column exists
-        if column_name in company_df.columns:
-            ax.plot(company_df.index, company_df[column_name], label=f'{ma}-Day MA', linestyle='--')
-        else:
-            print(f"Error: '{column_name}' column not found for {company_name}.")
-    ax.set_title(f'{company_name}')
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Price')
-    ax.grid(True)
-    ax.legend()
-
-# Adjust layout
-fig.tight_layout(rect=[0, 0, 1, 0.96])
-plt.show()
-
-# Plot histograms of Daily Returns for each company
-plt.figure(figsize=(15, 10))
-plt.suptitle('Histogram of Daily Returns for Each Company', fontsize=16)
-
-for i, (company_name, company_df) in enumerate(company_dict.items(), 1):
-    plt.subplot(2, 2, i)
-    company_df['Daily Return'].hist(bins=50, color=colors[company_name], edgecolor='black')
-    plt.xlabel('Daily Return')
-    plt.ylabel('Counts')
-    plt.title(company_name)
-    plt.grid(True)
-
-# Adjust layout to ensure everything fits well
-plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.show()
-
-"""
-
-
-"""
-# --- Forecast Function (with recomputed features) ---
-def make_forecast(model, df, scaler, features, time_steps, steps, symbol):
-    # Generate multi-step forecast with feature consistency.
-    df_future = df.copy()
-    preds = []
-
-    last_window = scaler.transform(df_future[features].iloc[-time_steps:].values)
-
-    for _ in range(steps):
-        input_seq = last_window.reshape(1, time_steps, len(features))
-        next_pred = model.predict(input_seq, verbose=0)[0, 0]
-        preds.append(next_pred)
-
-        # construct next row
-        new_row = df_future[features].iloc[-1:].copy()
-        new_row["Close"] = next_pred
-        new_row["Daily Return"] = new_row["Close"].pct_change().ffill()
-        for ma in [10, 20, 50]:
-            new_row[f"MA_{ma}"] = new_row["Close"].rolling(ma).mean().ffill()
-
-        # scale new_row properly
-        new_row_scaled = scaler.transform(new_row[features])
-        last_window = np.vstack([last_window[1:], new_row_scaled])
-
-        df_future = pd.concat([df_future, new_row], axis=0)
-
-    preds_unscaled = scaler.inverse_transform(
-        pd.DataFrame(
-            np.concatenate([np.array(preds).reshape(-1,1), np.zeros((steps, len(features)-1))], axis=1),
-            columns=features
-        )
-    )[:, 0]
-
-    future_dates = pd.date_range(df.index[-1] + timedelta(days=1), periods=steps, freq="B")
-    return pd.DataFrame(preds_unscaled, index=future_dates, columns=[symbol])
-________________
-
-# Comparing returns with seaborn's jointplot
-sns.jointplot(x='SFAKE1', y='TFAKE1', data=rets, kind='scatter', color='seagreen')
-sns.jointplot(x='SFAKE1', y='FAKE2', data=rets, kind='scatter')
-plt.show()
-
-# Pairplot for automatic visual analysis
-sns.pairplot(rets, kind='reg')
-plt.show()
-
-# Set up our figure by naming it returns_fig, call PairGrid on the DataFrame
-return_fig = sns.PairGrid(rets.dropna())
-
-# Customize the PairGrid
-return_fig.map_upper(plt.scatter, color='purple')
-return_fig.map_lower(sns.kdeplot, cmap='cool_d')
-return_fig.map_FAKE3g(plt.hist, bins=30)
-plt.show()
-
-# Create correlation heatmaps
-plt.figure(figsize=(12, 10))
-plt.subplot(2, 2, 1)
-sns.heatmap(rets.corr(), annot=True, cmap='summer')
-plt.title('Correlation of Stock Returns')
-
-plt.subplot(2, 2, 2)
-sns.heatmap(pd.DataFrame({company: data['Close'] for company, data in company_dict.items()}).corr(), annot=True, cmap='summer')
-plt.title('Correlation of Stock Closing Prices')
-# Adjust layout to make space for the main title and show the plot
-plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.show()
-
-fig.tight_layout()
-
-# Plot daily returns for each company
-# Create subplots
-fig, axes = plt.subplots(nrows=2, ncols=2)
-fig.set_figheight(10)
-fig.set_figwidth(15)
-fig.suptitle('Daily Returns')
-
-# Plot daily returns with custom colors
-for ax, (company, company_df) in zip(axes.flatten(), company_dict.items()):
-    ax.plot(company_df.index, company_df['Daily Return'], label=f'{company} Daily Return', color=colors[company])
-    ax.set_title(f'{company}')
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Daily Return')
-    ax.grid(True)
-    ax.legend()
-
-# Adjust layout
-fig.tight_layout(rect=[0, 0, 1, 0.96])
-plt.show()
-
-for ax, (company_name, company_df) in zip(axes.flatten(), company_dict.items()):
-    company_df['Daily Return'].plot(ax=ax, legend=True, linestyle='--', marker='o')
-    ax.set_title(company_name)
-
-fig.tight_layout()
-
-# Plot histogram of Daily Returns
-plt.figure(figsize=(15, 10))
-
-for i, (company_name, company_df) in enumerate(company_dict.items(), 1):
-    plt.subplot(2, 2, i)
-    company_df['Daily Return'].hist(bins=50)
-    plt.xlabel('Daily Return')
-    plt.ylabel('Counts')
-    plt.title(company_name)
-
-plt.tight_layout()
-
-# Comparing returns with seaborn's jointplot
-sns.jointplot(x='SFAKE1', y='TFAKE1', data=rets, kind='scatter', color='seagreen')
-sns.jointplot(x='SFAKE1', y='FAKE2', data=rets, kind='scatter')
-
-# Pairplot for automatic visual analysis
-sns.pairplot(rets, kind='reg')
-
-# Set up our figure by naming it returns_fig, call PairPlot on the DataFrame
-return_fig = sns.PairGrid(rets.dropna())
-
-# Customize the PairGrid
-return_fig.map_upper(plt.scatter, color='purple')
-return_fig.map_lower(sns.kdeplot, cmap='cool_d')
-return_fig.map_FAKE3g(plt.hist, bins=30)
-
-# Create correlation heatmaps
-plt.figure(figsize=(12, 10))
-
-plt.subplot(2, 2, 1)
-sns.heatmap(rets.corr(), annot=True, cmap='summer')
-plt.title('Correlation of Stock Returns')
-
-plt.subplot(2, 2, 2)
-sns.heatmap(closing_df.corr(), annot=True, cmap='summer')
-plt.title('Correlation of Stock Closing Prices')
-
-# Risk vs. Return scatter plot
-rets = rets.dropna()
-area = np.pi * 20
-plt.title('Risk vs. Return Scatter Plot')
-plt.figure(figsize=(10, 8))
-plt.scatter(rets.mean(), rets.std(), s=area)
-plt.xlabel('Expected Return')
-plt.ylabel('Risk')
-
-# Annotate the plot
-for label, x, y in zip(rets.columns, rets.mean(), rets.std()):
-    plt.annotate(label, (x, y), xytext=(10, 0), textcoords='offset points',
-                 arrowprops=dict(arrowstyle='-', color='blue', connectionstyle='arc3,rad=-0.3'))
-"""
 # ==============================
 def smooth_curve(values, window=5, poly=2):
     """Smooth a curve with Savitzky-Golay filter or fallback to rolling mean."""
@@ -634,6 +339,7 @@ def plot_results(history, adj_close_prices, training_data_len,
     axs[0].plot(adj_close_prices.index, adj_close_prices, label="Actual Prices", color="blue")
     axs[0].plot(prediction_dates, predictions_unscaled, label="Predicted Prices", color="orange")
 
+    # Bias corrected line (optional overlay)
     if bias_correction != 0:
         predictions_corrected = predictions_unscaled + bias_correction
         axs[0].plot(prediction_dates, predictions_corrected,
@@ -650,21 +356,6 @@ def plot_results(history, adj_close_prices, training_data_len,
     axs[0].set_title(f"{symbol} Actual + Predictions + Forecasts")
     axs[0].legend()
 
-    # Metrics overlay
-    metrics_text = (
-        f"MAE: {mae:.4f}\n"
-        f"RMSE: {rmse:.4f}\n"
-        f"R²: {r2:.4f}\n"
-        f"MAPE: {mape*100:.2f}%\n"
-        f"Dir. Acc: {direction_acc:.2f}%"
-    )
-    axs[0].text(
-        0.02, 0.98, metrics_text,
-        transform=axs[0].transAxes,
-        fontsize=9, verticalalignment="top",
-        bbox=dict(boxstyle="round", facecolor="white", alpha=0.7)
-    )
-
     # --- Panel 2: Residuals ---
     residuals = y_test - predictions_unscaled
     axs[1].plot(prediction_dates, residuals, color="purple", label="Residuals")
@@ -676,14 +367,10 @@ def plot_results(history, adj_close_prices, training_data_len,
     # --- Panel 3: Loss curves ---
     train_loss = history.history["loss"]
     val_loss = history.history.get("val_loss", [])
-
-    axs[2].plot(np.arange(len(train_loss)), smooth_curve(train_loss),
-                label="Training Loss (Smoothed)", color="blue")
-    if len(val_loss) > 0:
-        axs[2].plot(np.arange(len(val_loss)), smooth_curve(val_loss),
-                    label="Validation Loss (Smoothed)", color="orange")
-
-    axs[2].set_title(f"{symbol} --- LOSS CURVES ---")
+    axs[2].plot(np.arange(len(train_loss)), train_loss, label="Training Loss", color="blue")
+    if val_loss:
+        axs[2].plot(np.arange(len(val_loss)), val_loss, label="Validation Loss", color="orange")
+    axs[2].set_title(f"{symbol} --- LOSS CURVES --- (Smoothed)")
     axs[2].set_xlabel("Epochs")
     axs[2].set_ylabel("Loss (MSE)")
     axs[2].legend()
@@ -698,12 +385,10 @@ def plot_results(history, adj_close_prices, training_data_len,
     axs[3].set_title(f"{symbol} Volatility Indicators")
     axs[3].legend()
 
-    # --- Save + Show main 4-panel figure ---
     plt.tight_layout()
-    plt.savefig(f"{symbol}_results_with_residuals_and_loss.png", dpi=300)
     plt.show()
 
-    # --- Console metrics ---
+    # --- Print Metrics ---
     print(f"\n📊 {symbol} Evaluation Metrics:")
     print(f"MAE   : {mae:.4f}")
     print(f"RMSE  : {rmse:.4f}")
@@ -714,7 +399,7 @@ def plot_results(history, adj_close_prices, training_data_len,
         print(f"Directional Accuracy (Up/Down): {direction_acc:.2f}%")
     print(f"✅ Saved → {symbol}_results_with_residuals_and_loss.png")
 
-    # --- Extra Forecast Plots ---
+       # --- Extra Forecast Plots ---
     if future_predictions_df is not None:
         plt.figure(figsize=(12, 6))
         plt.plot(future_predictions_df.index, future_predictions_df[symbol],
@@ -734,7 +419,7 @@ def plot_results(history, adj_close_prices, training_data_len,
         plt.savefig(f"{symbol}_6m_forecast.png", dpi=300)
         print(f"Saved forecasts → {symbol}_60d_forecast.png and {symbol}_6m_forecast.png")
 
-    # --- Extra Residuals Plot ---
+    # --- Extra residuals plot if available ---
     if residuals is not None:
         plt.figure(figsize=(10, 6))
         plt.plot(prediction_dates, residuals, color="purple", alpha=0.7)
@@ -745,11 +430,9 @@ def plot_results(history, adj_close_prices, training_data_len,
         plt.grid(True, alpha=0.3)
         plt.savefig(f"{symbol}_residuals.png", dpi=300)
 
-    # --- Loss Curve Overlay (Smoothed) ---
+    # --- Loss Curve Overlay ---
     plt.figure(figsize=(10, 6))
-    plt.plot(smooth_curve(train_loss), label="Training Loss (Smoothed)", color="blue")
-    if len(val_loss) > 0:
-        plt.plot(smooth_curve(val_loss), label="Validation Loss (Smoothed)", color="orange")
+    plt.plot(val_loss, label="Validation Loss", color="orange")
     plt.title(f"{symbol} Loss Curves (Smoothed)")
     plt.xlabel("Epochs")
     plt.ylabel("Loss (MSE)")
@@ -757,6 +440,7 @@ def plot_results(history, adj_close_prices, training_data_len,
     plt.savefig(f"{symbol}_loss_curve_overlay.png", dpi=300)
 
     print(f"Saved diagnostics → {symbol}_loss_curve_overlay.png and {symbol}_residuals.png")
+
 # =======================
 # ==============================
 # Model Preparation
@@ -903,8 +587,7 @@ for symbol, df in company_dict.items():
     mse = mean_squared_error(y_test, predictions)
     rmse = np.sqrt(mse)
     r2 = r2_score(y_test, predictions)
-    mape = safe_mape(y_test_unscaled, predictions_unscaled)
-
+    mape = mean_absolute_percentage_error(y_test, predictions)
 
     # --- Directional accuracy ---
     direction_true = np.sign(np.diff(y_test.flatten()))
@@ -990,152 +673,3 @@ for symbol, df in company_dict.items():
     # --- Save final model ---
     model.save(f"checkpoints/{symbol}_final_model.keras")
     print("--------------------------------------------------")
-
-"""
-# =======================
-# STEP 0: Setup
-# =======================
-data = closing_df.dropna()
-print(f"\nClosing DF:\n{data}")
-
-symbols = ["FAKE1", "FAKE2", "FAKE3"]  # update as needed
-all_predictions_df = pd.DataFrame()   # combined across symbols
-
-# =======================
-# STEP 1: Data Prep
-# =======================
-def extract_window_data(series, window_len=5, zero_base=True):
-    window_data = []
-    for idx in range(len(series) - window_len):
-        tmp = series[idx:(idx + window_len)].copy()
-        if zero_base:
-            tmp = tmp / tmp[0] - 1
-        window_data.append(tmp.values)
-    return np.array(window_data)
-
-def prepare_data(data, aim="Close", window_len=10, zero_base=True, test_size=0.2):
-    nrows = len(data)
-    split_index = int(nrows * (1 - test_size))
-    train_data = data.iloc[:split_index]
-    test_data = data.iloc[split_index:]
-
-    X_train = extract_window_data(train_data[aim], window_len, zero_base)
-    X_test = extract_window_data(test_data[aim], window_len, zero_base)
-
-    y_train = train_data[aim].values[window_len:]
-    y_test = test_data[aim].values[window_len:]
-
-    if zero_base:
-        y_train = y_train / train_data[aim].values[:-window_len] - 1
-        y_test = y_test / test_data[aim].values[:-window_len] - 1
-
-    X_train = np.expand_dims(X_train, axis=2)
-    X_test = np.expand_dims(X_test, axis=2)
-    return X_train, X_test, y_train, y_test
-
-# =======================
-# STEP 2: Model Builder
-# =======================
-def build_model(hp):
-    model = Sequential()
-    model.add(LSTM(
-        units=hp.Int('lstm_units', 32, 128, step=16),
-        return_sequences=False,
-        input_shape=(X_train.shape[1], 1)
-    ))
-    model.add(Dropout(hp.Float('dropout_rate', 0.1, 0.5, step=0.05)))
-    model.add(Dense(hp.Int('dense_units', 8, 64, step=8), activation='relu'))
-    model.add(Dense(1))
-    model.compile(
-        optimizer=hp.Choice('optimizer', ['adam', 'rmsprop']),
-        loss='mse',
-        metrics=['mae']
-    )
-    return model
-
-# =======================
-# STEP 3: Loop over symbols
-# =======================
-for symbol in symbols:
-    print(f"\n🚀 Processing stock: {symbol}")
-    adj_close_prices = data[symbol].squeeze().to_frame(name="close")
-
-    # Data split
-    X_train, X_test, y_train, y_test = prepare_data(
-        data=adj_close_prices,
-        aim="close",
-        window_len=10,
-        zero_base=True,
-        test_size=0.2
-    )
-
-    # Hyperparameter tuner
-    tuner = kt.RandomSearch(
-        build_model,
-        objective='val_loss',
-        max_trials=10,
-        executions_per_trial=2,
-        directory='tuner_results',
-        project_name=f'{symbol}_lstm_tuning'
-    )
-    stop_early = tf.keras.callbacks.EarlyStopping(
-        monitor='val_loss', patience=3, restore_best_weights=True
-    )
-
-    tuner.search(
-        X_train, y_train,
-        epochs=30,
-        batch_size=32,
-        validation_split=0.2,
-        callbacks=[stop_early],
-        verbose=0
-    )
-
-    # Train best model
-    best_hps = tuner.get_best_hyperparameters(1)[0]
-    best_model = tuner.hypermodel.build(best_hps)
-    history = best_model.fit(
-        X_train, y_train,
-        epochs=50,
-        validation_split=0.2,
-        callbacks=[stop_early],
-        verbose=0
-    )
-
-    # Predictions
-    preds = best_model.predict(X_test).squeeze()
-
-    # Metrics
-    mae = mean_absolute_error(y_test, preds)
-    mse = mean_squared_error(y_test, preds)
-    rmse = np.sqrt(mse)
-    r2 = r2_score(y_test, preds)
-    print(f"\n📊 {symbol} Evaluation:")
-    print(f"MAE={mae:.4f}  MSE={mse:.6f}  RMSE={rmse:.4f}  R²={r2:.4f}")
-
-    # Per-symbol results DataFrame
-    results_df = pd.DataFrame({
-        f"{symbol}_Actual": y_test,
-        f"{symbol}_Predicted": preds
-    }, index=adj_close_prices.index[-len(y_test):])
-    results_df.to_csv(f"{symbol}_predictions.csv")
-
-    # Merge into combined DataFrame
-    all_predictions_df = pd.concat([all_predictions_df, results_df], axis=1)
-
-    # Training vs Validation Loss plot
-    plt.plot(history.history['loss'], label='Train Loss', color='blue')
-    plt.plot(history.history['val_loss'], label='Val Loss', color='orange')
-    plt.title(f"{symbol} - LSTM Training vs Validation Loss")
-    plt.xlabel("Epochs")
-    plt.ylabel("MSE")
-    plt.legend()
-    plt.savefig(f"{symbol}_loss_plot.png")
-    plt.close()
-
-# =======================
-# STEP 4: Save Combined
-# =======================
-all_predictions_df.to_csv("all_symbols_predictions.csv")
-print("\n✅ Combined predictions saved to all_symbols_predictions.csv")
-"""
