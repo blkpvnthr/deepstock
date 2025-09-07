@@ -232,7 +232,6 @@ def make_sequences(df, features, time_steps=60, test_size=0.2):
 
 
 # --- Preprocessing function (multi-ticker wrapper) ---
-# --- Preprocessing function (safe feature builder) ---
 def prepare_features(
     company_dict,
     features=["Close", "Daily Return", "MA_10", "MA_20", "MA_50"],
