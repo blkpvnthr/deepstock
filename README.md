@@ -136,8 +136,7 @@ pip install -r requirements.txt
  Integrate additional technical indicators
 
  Support transformer-based time-series models
-
-### Deploy forecasts as a simple API
+ 
 ---
 ## 📜 License
 
