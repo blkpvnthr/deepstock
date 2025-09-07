@@ -1,12 +1,12 @@
-# DeepStock
+# DeepStock 📊 
 
-📊 **DeepStock** is a deep learning framework for **stock price prediction and forecasting** using LSTMs and feature engineering.  
+**DeepStock** is a deep learning framework for **stock price prediction and forecasting** using LSTMs and feature engineering.  
 It supports training, evaluation, and visualization of model performance with **residuals, loss curves, and volatility indicators**.
 
 ![Training Forecast GIF](images/example2.gif)
 ---
 
-## 🚀 Features
+## Features
 
 - Preprocessing with **MinMaxScaler** and rolling features (MA10, MA20, MA50, returns).  
 
@@ -26,7 +26,7 @@ It supports training, evaluation, and visualization of model performance with **
 
 ---
 
-## 📂 Project Structure
+## 📂  Project Structure
 
 ```
 deepstock/
@@ -46,7 +46,6 @@ deepstock/
 │   └── example2.gif
 │
 ├── prediction.py          # main training + forecasting loop
-├── utils.py               # helper functions (plotting, feature engineering)
 ├── requirements.txt       # dependencies
 └── README.md              # project docs
 ```
@@ -54,7 +53,7 @@ deepstock/
 
 ---
 
-## ⚙️ Installation
+## Installation
 
 Clone the repo:
 ```bash
@@ -79,7 +78,7 @@ pip install -r requirements.txt
 
 ---
 
-## 📈 Usage
+## Usage
 
 1. Prepare your data
 
@@ -105,7 +104,7 @@ This will:
 
 ---
 
-## 🖼 Example Plots
+## Example Output
 > Actual + Predictions + Forecasts
 > Residuals & Loss Curves
 > Volatility Indicators
