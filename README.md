@@ -58,8 +58,8 @@ deepstock/
 
 Clone the repo:
 ```bash
-git clone https://github.com/your-username/quant-forecast.git
-cd quant-forecast
+git clone https://github.com/your-username/deepstock.git
+cd deepstock
 
 Create a virtual environment:
 macOS/Linux
