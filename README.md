@@ -80,17 +80,6 @@ pip install -r requirements.txt
 
 ## Usage
 
-1. Prepare your data
-
-Store your stock data as CSV or fetch it directly with yfinance.
-Each DataFrame should include:
-
-- Close
-- Daily Return
-- MA_10
-- MA_20
-- MA_50
-
 1. Run training + forecasting
 ``` bash
    python prediction.py
