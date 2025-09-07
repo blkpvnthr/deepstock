@@ -105,14 +105,14 @@ This will:
 
 ---
 
-🖼 Example Plots
+# 🖼 Example Plots
 Actual + Predictions + Forecasts
 
 Residuals & Loss Curves
 
 Volatility Indicators
 
-📊 Example Metrics
+### 📊 Example Metrics
 ``` bash
 CGNX Evaluation Metrics:
 MAE   : 0.0621
