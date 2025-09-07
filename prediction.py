@@ -441,7 +441,6 @@ def plot_results(history, adj_close_prices, training_data_len,
 
     print(f"Saved diagnostics → {symbol}_loss_curve_overlay.png and {symbol}_residuals.png")
 
-# =======================
 # ==============================
 # Model Preparation
 # ==============================
