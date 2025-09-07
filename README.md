@@ -98,14 +98,12 @@ Each DataFrame should include:
 ```
 
 This will:
+- Train or load an existing model per ticker.
+- Save checkpoints to checkpoints/.
+- Generate predictions and forecasts (60-day & 6-month).
+- Save plots into results/plots/.
 
-Train or load an existing model per ticker.
-
-Save checkpoints to checkpoints/.
-
-Generate predictions and forecasts (60-day & 6-month).
-
-Save plots into results/plots/.
+---
 
 🖼 Example Plots
 Actual + Predictions + Forecasts
