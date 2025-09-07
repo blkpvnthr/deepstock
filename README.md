@@ -3,7 +3,6 @@
 📊 **DeepStock** is a deep learning framework for **stock price prediction and forecasting** using LSTMs and feature engineering.  
 It supports training, evaluation, and visualization of model performance with **residuals, loss curves, and volatility indicators**.
 
-### Animated Training / Forecasting Demo
 ![Training Forecast GIF](images/example2.gif)
 ---
 
