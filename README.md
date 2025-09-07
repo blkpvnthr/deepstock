@@ -105,7 +105,7 @@ This will:
 
 ---
 
-# 🖼 Example Plots
+## 🖼 Example Plots
 Actual + Predictions + Forecasts
 
 Residuals & Loss Curves
