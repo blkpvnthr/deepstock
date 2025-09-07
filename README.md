@@ -61,12 +61,12 @@ git clone https://github.com/blkpvnthr/deepstock.git
 cd deepstock
 ```
 Create a virtual environment:<br>
-macOS/Linux
+> macOS/Linux
 ``` bash
 python -m venv .venv
 source .venv/bin/activate
 ```
-Windows
+> Windows
 ``` bash
 .venv\Scripts\activate
 ```
