@@ -60,7 +60,7 @@ Clone the repo:
 git clone https://github.com/blkpvnthr/deepstock.git
 cd deepstock
 ```
-Create a virtual environment:
+Create a virtual environment:<br>
 macOS/Linux
 ``` bash
 python -m venv .venv
