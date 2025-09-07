@@ -58,7 +58,7 @@ deepstock/
 
 Clone the repo:
 ```bash
-git clone https://github.com/your-username/deepstock.git
+git clone https://github.com/blkpvnthr/deepstock.git
 cd deepstock
 
 Create a virtual environment:
