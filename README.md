@@ -73,12 +73,8 @@ python prediction.py
   - Saved models: `.keras` files per ticker
 
 ---
-
-## Project Structure
-
-> You can organize the repo like this (recommended):
-
 ## 📂  Project Structure
+> You can organize the repo like this (recommended):
 
 ```
 deepstock/
