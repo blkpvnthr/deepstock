@@ -1,6 +1,28 @@
 # DeepStock📊 
 ![Training Forecast GIF](images/example2.gif)
-An end-to-end time-series forecasting pipeline that trains a **GRU-based neural network** on historical OHLCV stock data (via **Yahoo Finance**) and optionally on **synthetic “FAKE” tickers**, then evaluates performance, generates diagnostics, and produces **60-business-day** and **~6-month (126 business-day)** forecasts.
+An end-to-end time-series forecasting pipeline that trains a **GRU-based neural network** on historical OHLCV stock data (via **Yahoo Finance**) and optionally on **synthetic “FAKE” tickers**, then evaluates performance, generates diagnostics, and produces **60-business-day** and **~6-month (126 business-day)** ---
+
+## Example Output
+> Actual + Predictions + Forecasts
+> Residuals & Loss Curves
+> Volatility Indicators
+
+### 📊 Example Metrics
+``` bash
+CGNX Evaluation Metrics:
+MAE   : 0.0621
+RMSE  : 0.0717
+R²    : -1.1457
+MAPE  : 48.67%
+Directional Accuracy: 46.81%
+Bias Correction: +1.235
+```
+### Actual + Predictions + Forecasts
+![Forecast](images/example1.png)
+
+---
+
+
 
 ___
 ## Installation
