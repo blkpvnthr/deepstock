@@ -2,6 +2,31 @@
 ![Training Forecast GIF](images/example2.gif)
 An end-to-end time-series forecasting pipeline that trains a **GRU-based neural network** on historical OHLCV stock data (via **Yahoo Finance**) and optionally on **synthetic “FAKE” tickers**, then evaluates performance, generates diagnostics, and produces **60-business-day** and **~6-month (126 business-day)** forecasts.
 
+___
+## Installation
+
+Clone the repo:
+```bash
+git clone https://github.com/blkpvnthr/deepstock.git
+cd deepstock
+```
+Create a virtual environment:<br>
+> macOS/Linux
+``` bash
+python -m venv .venv
+source .venv/bin/activate
+```
+> Windows
+``` bash
+.venv\Scripts\activate
+```
+
+Install dependencies:
+``` bash
+pip install -r requirements.txt
+```
+
+
 ---
 
 ## Features
