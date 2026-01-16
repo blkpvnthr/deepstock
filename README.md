@@ -27,7 +27,7 @@ pip install -r requirements.txt
 ```
 Run the script 
 ```bash
-python 
+python prediction.py
 ```
 
 ---
