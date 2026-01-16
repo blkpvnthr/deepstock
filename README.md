@@ -160,11 +160,11 @@ pip install -r requirements.txt
 ---
 ## 📜 License
 
-MIT License.
+>MIT License.
 Feel free to fork and adapt for your own trading experiments 🚀
 
 ---
 
 ## ✨ Acknowledgements
 
-Inspired by real-world quantitative finance research and experimentation with deep learning on market data.
+>Inspired by real-world quantitative finance research and experimentation with deep learning on market data.
