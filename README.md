@@ -1,6 +1,4 @@
 # DeepStock📊 
-# GRU Stock Forecaster (Real + Synthetic Tickers)
-
 An end-to-end time-series forecasting pipeline that trains a **GRU-based neural network** on historical OHLCV stock data (via **Yahoo Finance**) and optionally on **synthetic “FAKE” tickers**, then evaluates performance, generates diagnostics, and produces **60-business-day** and **~6-month (126 business-day)** forecasts.
 
 ---
