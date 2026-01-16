@@ -28,9 +28,28 @@ pip install -r requirements.txt
 Run the script:
 ```bash
 python prediction.py
+```---
+
+## Example Output
+> Actual + Predictions + Forecasts
+> Residuals & Loss Curves
+> Volatility Indicators
+
+### 📊 Example Metrics
+``` bash
+CGNX Evaluation Metrics:
+MAE   : 0.0621
+RMSE  : 0.0717
+R²    : -1.1457
+MAPE  : 48.67%
+Directional Accuracy: 46.81%
+Bias Correction: +1.235
 ```
+### Actual + Predictions + Forecasts
+![Forecast](images/example1.png)
 
 ---
+
 
 ## Features
 
@@ -113,27 +132,6 @@ This will:
 - Generate predictions and forecasts (60-day & 6-month).
 - Save plots into results/plots/.
 
----
-
-## Example Output
-> Actual + Predictions + Forecasts
-> Residuals & Loss Curves
-> Volatility Indicators
-
-### 📊 Example Metrics
-``` bash
-CGNX Evaluation Metrics:
-MAE   : 0.0621
-RMSE  : 0.0717
-R²    : -1.1457
-MAPE  : 48.67%
-Directional Accuracy: 46.81%
-Bias Correction: +1.235
-```
-### Actual + Predictions + Forecasts
-![Forecast](images/example1.png)
-
----
 
 ## 🛠 Requirements
 
