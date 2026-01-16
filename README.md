@@ -78,50 +78,6 @@ python prediction.py
 
 > You can organize the repo like this (recommended):
 
-
-
-
-
-
-
-
-
-
-
-£££££££££££££££££££££££££££££££££££££££££££££££££££
-
-
-
-
-
-
-
-**DeepStock** is a deep learning framework for **stock price prediction and forecasting** using LSTMs and feature engineering.  
-It supports training, evaluation, and visualization of model performance with **residuals, loss curves, and volatility indicators**.
-
-![Training Forecast GIF](images/example2.gif)
----
-
-## Features
-
-- Preprocessing with **MinMaxScaler** and rolling features (MA10, MA20, MA50, returns).  
-
-- Sequence generation for supervised learning on time series.  
-- LSTM-based forecasting with:
-  - Model checkpointing  
-  - Early stopping & learning rate scheduling  
-- Evaluation metrics:
-  - MAE, RMSE, R², MAPE  
-  - Directional Accuracy (%)  
-  - Bias correction  
-- Visualizations:
-  - Actual vs. Predicted prices with **forecasts**  
-  - Residuals (Actual − Predicted)  
-  - Smoothed training/validation loss curves  
-  - Volatility indicators (rolling std & Bollinger Band width)  
-
----
-
 ## 📂  Project Structure
 
 ```
